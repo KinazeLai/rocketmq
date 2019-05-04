@@ -16,26 +16,26 @@
  */
 package org.apache.rocketmq.example.zebra.ordermessage;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import ch.qos.logback.core.util.TimeUtil;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.example.MqConfig;
 
-public class Consumer {
+import java.util.List;
+
+public class ConsumerB {
 
     public static void main(String[] args) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("please_rename_unique_group_name_3");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("OrderCustomerB");
         consumer.setNamesrvAddr(MqConfig.MQ_SRV_ADDR);
 
 //        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
 
-        consumer.subscribe("TopicTesta", "*");
+        consumer.subscribe("TopicTestOrder", "*");
 
         consumer.registerMessageListener(new MessageListenerOrderly() {
 //            AtomicLong consumeTimes = new AtomicLong(0);
@@ -43,6 +43,11 @@ public class Consumer {
             @Override
             public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
 //                context.setAutoCommit(false);
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 for(MessageExt msg:msgs) {
                         System.out.printf("%s Receive New Messages: %s %n", Thread.currentThread().getName(),
                                 new String(msg.getBody()));

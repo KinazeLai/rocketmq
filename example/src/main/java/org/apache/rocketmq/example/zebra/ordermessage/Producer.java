@@ -33,16 +33,16 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 public class Producer {
     public static void main(String[] args) throws UnsupportedEncodingException {
         try {
-            MQProducer producer = new DefaultMQProducer("please_rename_unique_group_name");
+            MQProducer producer = new DefaultMQProducer("OrderProducer");
             ((DefaultMQProducer) producer).setNamesrvAddr(MqConfig.MQ_SRV_ADDR);
             ((DefaultMQProducer) producer).setRetryTimesWhenSendFailed(20);
 //            ((DefaultMQProducer) producer).setDefaultTopicQueueNums(1000);
             producer.start();
 
             String[] tags = new String[] {"TagA", "TagB", "TagC", "TagD", "TagE"};
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 1000000; i++) {
                 Message msg =
-                        new Message("TopicTesta", tags[i % tags.length], "KEY" + i,
+                        new Message("TopicTestOrder", tags[i % tags.length], "KEY" + i,
                                 ("A " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
                 SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
                     @Override
@@ -51,14 +51,14 @@ public class Producer {
 //                        int index = id % mqs.size();
                         return mqs.get(id);
                     }
-                },3);
+                },2);
 
                 System.out.printf("%s%n", sendResult);
             }
 
             for (int i = 0; i < 10; i++) {
                 Message msg =
-                        new Message("TopicTesta", tags[i % tags.length], "KEY" + i,
+                        new Message("TopicTestOrder", tags[i % tags.length], "KEY" + i,
                                 ("B " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
                 SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
                     @Override
@@ -74,7 +74,7 @@ public class Producer {
 
             for (int i = 0; i < 10; i++) {
                 Message msg =
-                        new Message("TopicTesta", tags[i % tags.length], "KEY" + i,
+                        new Message("TopicTestOrder", tags[i % tags.length], "KEY" + i,
                                 ("C " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
                 SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
                     @Override
